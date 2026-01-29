@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Danh sách sinh viên</title>
+
+<style>
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+        background-color: #f4f6f8;
+        padding: 30px;
+    }
+
+    h2 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    a {
+        text-decoration: none;
+    }
+
+    .add-btn {
+        display: inline-block;
+        margin-bottom: 15px;
+        padding: 10px 15px;
+        background-color: #28a745;
+        color: white;
+        border-radius: 5px;
+        font-weight: bold;
+    }
+
+    .add-btn:hover {
+        background-color: #218838;
+    }
+
+    table {
+        border-collapse: collapse;
+        width: 80%;
+        margin: auto;
+        background-color: white;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    th {
+        background-color: #007bff;
+        color: white;
+        padding: 10px;
+        text-align: center;
+    }
+
+    td {
+        padding: 10px;
+        text-align: center;
+        border-bottom: 1px solid #ddd;
+    }
+
+    tr:hover {
+        background-color: #f1f1f1;
+    }
+
+    .action a {
+        margin: 0 5px;
+        padding: 5px 8px;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+
+    .edit {
+        background-color: #ffc107;
+        color: black;
+    }
+
+    .edit:hover {
+        background-color: #e0a800;
+    }
+
+    .delete {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .delete:hover {
+        background-color: #c82333;
+    }
+</style>
+
+</head>
+<body>
+
+<h2>DANH SÁCH SINH VIÊN</h2>
+
+<div style="text-align:center;">
+    <a href="/students/add" class="add-btn">➕ Thêm sinh viên</a>
+</div>
+
+<table>
+<tr>
+    <th>ID</th>
+    <th>Họ tên</th>
+    <th>Tuổi</th>
+    <th>Email</th>
+    <th>Hành động</th>
+</tr>
+
+<tr th:each="sv : ${students}">
+    <td th:text="${sv.id}"></td>
+    <td th:text="${sv.name}"></td>
+    <td th:text="${sv.age}"></td>
+    <td th:text="${sv.email}"></td>
+    <td class="action">
+        <a th:href="@{/students/edit/{id}(id=${sv.id})}" class="edit">✏️ Sửa</a>
+        <a th:href="@{/students/delete/{id}(id=${sv.id})}"
+           class="delete"
+           onclick="return confirm('Xóa sinh viên này?')">🗑️ Xóa</a>
+    </td>
+</tr>
+
+</table>
+
+</body>
+</html>
