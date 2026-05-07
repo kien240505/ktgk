@@ -46,5 +46,17 @@ public class StudentApiController {
     public void delete(@PathVariable Long id) {
         studentService.deleteStudent(id);
     }
-    
+    @PostMapping("/update/{id}")
+    public Student updateStudent(
+            @PathVariable Long id,
+            @RequestBody Student student) {
+
+        student.setId(id);
+        return studentService.updateStudent(student);
+    }
+    // API SEARCH BY NAME
+    @GetMapping("/search")
+    public List<Student> search(@RequestParam String name) {
+        return studentService.searchByName(name);
+    }
 }

@@ -1,123 +1,727 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta charset="UTF-8">
-<title>Danh sách sinh viên</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Sinh Viên</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-<style>
-    body {
-        font-family: Arial, Helvetica, sans-serif;
-        background-color: #f4f6f8;
-        padding: 30px;
-    }
+        :root {
+            --sidebar-w: 260px;
+            --purple:    #6c63ff;
+            --purple-dk: #3b2fdb;
+            --pink:      #e040fb;
+            --green:     #28d48a;
+            --bg-dark:   #0f0c29;
+        }
 
-    h2 {
-        text-align: center;
-        color: #333;
-        margin-bottom: 20px;
-    }
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f0c29, #1a1740, #24243e);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
 
-    a {
-        text-decoration: none;
-    }
+        /* ═══════════════════════════════
+           TOP HEADER BANNER
+        ═══════════════════════════════ */
+        .top-header {
+            width: 100%;
+            background: linear-gradient(90deg, #0d0b22 0%, #1e1a55 50%, #0d0b22 100%);
+            border-bottom: 1px solid rgba(108,99,255,0.35);
+            padding: 0 32px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+        }
 
-    .add-btn {
-        display: inline-block;
-        margin-bottom: 15px;
-        padding: 10px 15px;
-        background-color: #28a745;
-        color: white;
-        border-radius: 5px;
-        font-weight: bold;
-    }
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
 
-    .add-btn:hover {
-        background-color: #218838;
-    }
+        .header-logo {
+            width: 40px; height: 40px;
+            background: linear-gradient(135deg, var(--purple), var(--pink));
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px;
+            box-shadow: 0 4px 16px rgba(108,99,255,0.5);
+            flex-shrink: 0;
+        }
 
-    table {
-        border-collapse: collapse;
-        width: 80%;
-        margin: auto;
-        background-color: white;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
+        .header-title-block {
+            display: flex;
+            flex-direction: column;
+        }
 
-    th {
-        background-color: #007bff;
-        color: white;
-        padding: 10px;
-        text-align: center;
-    }
+        .header-title {
+            font-size: 1.05rem;
+            font-weight: 800;
+            letter-spacing: 0.8px;
+            background: linear-gradient(90deg, #fff 30%, #a89dff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+        }
 
-    td {
-        padding: 10px;
-        text-align: center;
-        border-bottom: 1px solid #ddd;
-    }
+        .header-sub {
+            font-size: 0.68rem;
+            color: rgba(255,255,255,0.38);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
 
-    tr:hover {
-        background-color: #f1f1f1;
-    }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
 
-    .action a {
-        margin: 0 5px;
-        padding: 5px 8px;
-        border-radius: 4px;
-        font-size: 14px;
-    }
+        .header-time {
+            font-size: 0.78rem;
+            color: rgba(255,255,255,0.4);
+        }
 
-    .edit {
-        background-color: #ffc107;
-        color: black;
-    }
+        .header-avatar {
+            width: 34px; height: 34px;
+            background: linear-gradient(135deg, var(--purple), var(--pink));
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 15px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .header-avatar:hover { transform: scale(1.1); }
 
-    .edit:hover {
-        background-color: #e0a800;
-    }
+        /* ═══════════════════════════════
+           MAIN LAYOUT  (sidebar + content)
+        ═══════════════════════════════ */
+        .layout {
+            display: flex;
+            flex: 1;
+        }
 
-    .delete {
-        background-color: #dc3545;
-        color: white;
-    }
+        /* ─── Sidebar ─── */
+        .sidebar {
+            width: var(--sidebar-w);
+            min-height: calc(100vh - 64px);
+            background: rgba(255,255,255,0.03);
+            border-right: 1px solid rgba(255,255,255,0.07);
+            padding: 28px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex-shrink: 0;
+            position: sticky;
+            top: 64px;
+            height: calc(100vh - 64px);
+            overflow-y: auto;
+        }
 
-    .delete:hover {
-        background-color: #c82333;
-    }
-</style>
+        .sidebar-section-label {
+            font-size: 0.62rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.25);
+            padding: 12px 12px 6px;
+            margin-top: 8px;
+        }
 
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 14px;
+            border-radius: 12px;
+            color: rgba(255,255,255,0.55);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.22s;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+
+        .nav-item:hover {
+            background: rgba(108,99,255,0.12);
+            color: #fff;
+            border-color: rgba(108,99,255,0.2);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, rgba(108,99,255,0.28), rgba(224,64,251,0.15));
+            color: #fff;
+            border-color: rgba(108,99,255,0.4);
+            box-shadow: 0 4px 16px rgba(108,99,255,0.2);
+        }
+
+        .nav-icon {
+            font-size: 18px;
+            width: 22px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .nav-badge {
+            margin-left: auto;
+            background: rgba(108,99,255,0.35);
+            color: #a89dff;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 20px;
+        }
+
+        .sidebar-divider {
+            height: 1px;
+            background: rgba(255,255,255,0.07);
+            margin: 10px 0;
+        }
+
+        /* ─── Content ─── */
+        .content {
+            flex: 1;
+            padding: 36px 40px;
+            min-width: 0;
+        }
+
+        /* ─── Page Header inside content ─── */
+        .page-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .page-title-block h1 {
+            font-size: 1.7rem;
+            font-weight: 800;
+            letter-spacing: 0.3px;
+            color: #fff;
+        }
+
+        .page-breadcrumb {
+            font-size: 0.78rem;
+            color: rgba(255,255,255,0.35);
+            margin-top: 4px;
+        }
+
+        .page-breadcrumb span {
+            color: rgba(108,99,255,0.9);
+        }
+
+        /* ─── Stats Row ─── */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        .stat-card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 28px rgba(0,0,0,0.3);
+        }
+
+        .stat-icon {
+            width: 46px; height: 46px;
+            border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        .stat-icon.purple { background: rgba(108,99,255,0.2); }
+        .stat-icon.green  { background: rgba(40,212,138,0.2); }
+        .stat-icon.pink   { background: rgba(224,64,251,0.2); }
+        .stat-icon.orange { background: rgba(255,165,0,0.2); }
+
+        .stat-info .stat-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+            line-height: 1;
+        }
+
+        .stat-info .stat-label {
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.4);
+            margin-top: 4px;
+        }
+
+        /* ─── Toolbar ─── */
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            justify-content: space-between;
+        }
+
+        .search-form {
+            display: flex;
+            gap: 8px;
+            flex: 1;
+            min-width: 220px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 11px 16px;
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 10px;
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .search-input::placeholder { color: rgba(255,255,255,0.3); }
+
+        .search-input:focus {
+            background: rgba(108,99,255,0.12);
+            border-color: #6c63ff;
+            box-shadow: 0 0 0 3px rgba(108,99,255,0.2);
+        }
+
+        .search-btn {
+            padding: 11px 18px;
+            background: rgba(108,99,255,0.25);
+            color: #fff;
+            border: 1px solid rgba(108,99,255,0.4);
+            border-radius: 10px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        .search-btn:hover {
+            background: #6c63ff;
+            border-color: #6c63ff;
+            box-shadow: 0 4px 16px rgba(108,99,255,0.4);
+        }
+
+        .add-btn {
+            padding: 11px 20px;
+            background: linear-gradient(135deg, #28d48a, #00b894);
+            color: #fff;
+            border-radius: 10px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex; align-items: center; gap: 6px;
+            white-space: nowrap;
+            transition: all 0.3s;
+            box-shadow: 0 4px 16px rgba(40, 212, 138, 0.35);
+        }
+        .add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(40, 212, 138, 0.5);
+            filter: brightness(1.08);
+        }
+
+        /* ─── Table ─── */
+        .table-card {
+            background: rgba(255,255,255,0.04);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.09);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.07);
+        }
+
+        .table-top {
+            padding: 16px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .table-top-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: rgba(255,255,255,0.7);
+        }
+
+        .table-top-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: var(--green);
+            box-shadow: 0 0 8px var(--green);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead tr {
+            background: rgba(108, 99, 255, 0.15);
+        }
+
+        th {
+            padding: 14px 18px;
+            text-align: left;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: rgba(255,255,255,0.5);
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+        }
+
+        tbody tr {
+            transition: background 0.2s;
+            animation: fadeRow 0.4s ease both;
+        }
+
+        @keyframes fadeRow {
+            from { opacity: 0; transform: translateX(-8px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+
+        tbody tr:not(:last-child) {
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        tbody tr:hover {
+            background: rgba(108, 99, 255, 0.10);
+        }
+
+        td {
+            padding: 14px 18px;
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.82);
+            vertical-align: middle;
+        }
+
+        .id-badge {
+            display: inline-block;
+            background: rgba(108,99,255,0.22);
+            color: #a89dff;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.76rem;
+            font-weight: 700;
+        }
+
+        .name-cell {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .avatar-mini {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--purple), var(--pink));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-edit, .btn-delete {
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex; align-items: center; gap: 4px;
+            transition: all 0.25s;
+        }
+
+        .btn-edit {
+            background: rgba(255,193,7,0.12);
+            color: #ffd54f;
+            border: 1px solid rgba(255,193,7,0.28);
+        }
+        .btn-edit:hover {
+            background: rgba(255,193,7,0.25);
+            box-shadow: 0 4px 12px rgba(255,193,7,0.28);
+            transform: translateY(-1px);
+        }
+
+        .btn-delete {
+            background: rgba(220,53,69,0.12);
+            color: #ff8a9a;
+            border: 1px solid rgba(220,53,69,0.28);
+        }
+        .btn-delete:hover {
+            background: rgba(220,53,69,0.25);
+            box-shadow: 0 4px 12px rgba(220,53,69,0.28);
+            transform: translateY(-1px);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: rgba(255,255,255,0.3);
+        }
+        .empty-state .empty-icon { font-size: 48px; margin-bottom: 12px; }
+        .empty-state p { font-size: 0.95rem; }
+
+        a { text-decoration: none; }
+
+        /* ─── Responsive ─── */
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .content { padding: 24px 16px; }
+            .stats-row { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
 </head>
 <body>
 
-<h2>DANH SÁCH SINH VIÊN</h2>
+<!-- ══════════ TOP HEADER BANNER ══════════ -->
+<header class="top-header">
+    <div class="header-brand">
+        <div class="header-logo">🎓</div>
+        <div class="header-title-block">
+            <div class="header-title">HỆ THỐNG QUẢN LÝ SINH VIÊN</div>
+            <div class="header-sub">Student Management System</div>
+        </div>
+    </div>
+    <div class="header-right">
+        <span class="header-time" id="headerTime"></span>
+        <div class="header-avatar" title="Tài khoản">👤</div>
+    </div>
+</header>
 
-<div style="text-align:center;">
-    <a href="/students/add" class="add-btn">➕ Thêm sinh viên</a>
+<!-- ══════════ MAIN LAYOUT ══════════ -->
+<div class="layout">
+
+    <!-- ── SIDEBAR ── -->
+    <aside class="sidebar">
+
+        <div class="sidebar-section-label">Menu chính</div>
+
+        <a href="/students" class="nav-item active" id="nav-students">
+            <span class="nav-icon">🎓</span>
+            Danh Sách Sinh Viên
+            <span class="nav-badge" id="studentCount">0</span>
+        </a>
+
+        <a href="/students/add" class="nav-item" id="nav-add">
+            <span class="nav-icon">➕</span>
+            Thêm Sinh Viên
+        </a>
+
+        <div class="sidebar-divider"></div>
+        <div class="sidebar-section-label">Tiện ích</div>
+
+        <a href="#" class="nav-item" id="nav-stats">
+            <span class="nav-icon">📊</span>
+            Thống Kê
+        </a>
+
+        <a href="#" class="nav-item" id="nav-export">
+            <span class="nav-icon">📤</span>
+            Xuất Dữ Liệu
+        </a>
+
+        <a href="#" class="nav-item" id="nav-import">
+            <span class="nav-icon">📥</span>
+            Nhập Dữ Liệu
+        </a>
+
+        <div class="sidebar-divider"></div>
+        <div class="sidebar-section-label">Hệ thống</div>
+
+        <a href="#" class="nav-item" id="nav-settings">
+            <span class="nav-icon">⚙️</span>
+            Cài Đặt
+        </a>
+
+        <a href="#" class="nav-item" id="nav-help">
+            <span class="nav-icon">❓</span>
+            Trợ Giúp
+        </a>
+
+    </aside>
+
+    <!-- ── CONTENT ── -->
+    <main class="content">
+
+        <!-- Page header -->
+        <div class="page-header">
+            <div class="page-title-block">
+                <h1>📋 Danh Sách Sinh Viên</h1>
+                <p class="page-breadcrumb">Trang chủ / <span>Quản lý sinh viên</span></p>
+            </div>
+        </div>
+
+        <!-- Stats row -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-icon purple">🎓</div>
+                <div class="stat-info">
+                    <div class="stat-number" id="statTotal" th:text="${students != null ? #lists.size(students) : 0}">0</div>
+                    <div class="stat-label">Tổng sinh viên</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon green">✅</div>
+                <div class="stat-info">
+                    <div class="stat-number">—</div>
+                    <div class="stat-label">Đang học</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon pink">📧</div>
+                <div class="stat-info">
+                    <div class="stat-number">—</div>
+                    <div class="stat-label">Có email</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon orange">📅</div>
+                <div class="stat-info">
+                    <div class="stat-number">2026</div>
+                    <div class="stat-label">Năm học</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="toolbar">
+            <form action="/students" method="get" class="search-form">
+                <input type="text"
+                       name="keyword"
+                       class="search-input"
+                       placeholder="🔍 Tìm kiếm sinh viên..."
+                       th:value="${keyword}">
+                <button type="submit" class="search-btn">Tìm kiếm</button>
+            </form>
+            <a href="/students/add" class="add-btn">➕ Thêm sinh viên</a>
+        </div>
+
+        <!-- Table -->
+        <div class="table-card">
+            <div class="table-top">
+                <div class="table-top-dot"></div>
+                <span class="table-top-title">Dữ liệu sinh viên – cập nhật theo thời gian thực</span>
+            </div>
+            <table>
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Họ và Tên</th>
+                    <th>Tuổi</th>
+                    <th>Email</th>
+                    <th>Hành Động</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="sv, iter : ${students}" th:style="'animation-delay:' + ${iter.index * 60} + 'ms'">
+                    <td><span class="id-badge" th:text="${sv.id}"></span></td>
+                    <td>
+                        <div class="name-cell">
+                            <div class="avatar-mini">👤</div>
+                            <span th:text="${sv.name}"></span>
+                        </div>
+                    </td>
+                    <td th:text="${sv.age}"></td>
+                    <td th:text="${sv.email}"></td>
+                    <td>
+                        <div class="actions">
+                            <a th:href="@{/students/edit/{id}(id=${sv.id})}" class="btn-edit">✏️ Sửa</a>
+                            <a th:href="@{/students/delete/{id}(id=${sv.id})}"
+                               class="btn-delete"
+                               onclick="return confirm('Bạn có chắc muốn xóa sinh viên này không?')">🗑️ Xóa</a>
+                        </div>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(students)}">
+                    <td colspan="5">
+                        <div class="empty-state">
+                            <div class="empty-icon">📭</div>
+                            <p>Chưa có sinh viên nào. Hãy thêm sinh viên mới!</p>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </main>
 </div>
 
-<table>
-<tr>
-    <th>ID</th>
-    <th>Họ tên</th>
-    <th>Tuổi</th>
-    <th>Email</th>
-    <th>Hành động</th>
-</tr>
+<script>
+    // Live clock
+    function updateTime() {
+        const now = new Date();
+        const opts = { weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric',
+                       hour: '2-digit', minute: '2-digit' };
+        document.getElementById('headerTime').textContent = now.toLocaleString('vi-VN', opts);
+    }
+    updateTime();
+    setInterval(updateTime, 1000);
 
-<tr th:each="sv : ${students}">
-    <td th:text="${sv.id}"></td>
-    <td th:text="${sv.name}"></td>
-    <td th:text="${sv.age}"></td>
-    <td th:text="${sv.email}"></td>
-    <td class="action">
-        <a th:href="@{/students/edit/{id}(id=${sv.id})}" class="edit">✏️ Sửa</a>
-        <a th:href="@{/students/delete/{id}(id=${sv.id})}"
-           class="delete"
-           onclick="return confirm('Xóa sinh viên này?')">🗑️ Xóa</a>
-    </td>
-</tr>
+    // Sync student count badge with stat card
+    const total = document.getElementById('statTotal');
+    if (total) {
+        document.getElementById('studentCount').textContent = total.textContent.trim();
+    }
 
-</table>
+    // Active nav highlight based on URL
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', function() {
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+</script>
 
 </body>
 </html>

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.example.student.model.Student;
 import com.example.student.service.StudentService;
-
+import java.util.List;
 @Controller
 public class StudentController {
 
@@ -15,9 +15,23 @@ public class StudentController {
     private StudentService studentService;
 
     // LIST
+    // hiển thị danh sách + search
     @GetMapping("/students")
-    public String list(Model model) {
-        model.addAttribute("students", studentService.getAllStudents());
+    public String students(
+            @RequestParam(value = "keyword", required = false) String keyword,
+            Model model) {
+
+        List<Student> students;
+
+        if (keyword != null && !keyword.isEmpty()) {
+            students = studentService.searchByName(keyword);
+        } else {
+            students = studentService.getAllStudents();
+        }
+
+        model.addAttribute("students", students);
+        model.addAttribute("keyword", keyword);
+
         return "students";
     }
 
@@ -49,4 +63,5 @@ public class StudentController {
         studentService.deleteStudent(id);
         return "redirect:/students";
     }
+    
 }

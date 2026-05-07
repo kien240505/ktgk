@@ -29,4 +29,10 @@ public class StudentService {
     public void deleteStudent(Long id) {
         studentRepository.deleteById(id);
     }
+    public List<Student> searchByName(String keyword) {
+    return studentRepository.findByNameContainingIgnoreCase(keyword);
+    }
+    public Student updateStudent(Student student) {
+    return studentRepository.save(student);
+}
 }
